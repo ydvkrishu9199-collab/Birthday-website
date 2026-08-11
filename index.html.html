@@ -1,0 +1,1122 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! | A Special Celebration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #07080c;
+            --bg-secondary: #0d0e15;
+            --accent-pink: #ff3366;
+            --accent-purple: #9d4edd;
+            --accent-cyan: #00f2fe;
+            --accent-gold: #ffd166;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-glow: rgba(255, 51, 102, 0.15);
+            --font-head: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --font-accent: 'Outfit', sans-serif;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas Background */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Ambient Glow Spheres */
+        .ambient-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+            animation: pulseGlow 10s infinite alternate ease-in-out;
+        }
+        .glow-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, var(--accent-pink), transparent 70%);
+        }
+        .glow-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, var(--accent-purple), transparent 70%);
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+            50% { transform: scale(1.1) translate(20px, -20px); opacity: 0.45; }
+            100% { transform: scale(0.95) translate(-20px, 20px); opacity: 0.25; }
+        }
+
+        /* Layout Container */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 24px 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Progress Bar Nav */
+        .progress-nav {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(13, 14, 21, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .step-dot.active {
+            width: 24px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
+            box-shadow: 0 0 12px var(--accent-pink);
+        }
+
+        /* Step Card Styling */
+        .step-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+        }
+
+        .step-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 40px 36px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        /* Typography & Components */
+        .tagline {
+            display: inline-block;
+            font-family: var(--font-accent);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: var(--accent-pink);
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding: 6px 14px;
+            background: rgba(255, 51, 102, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 51, 102, 0.2);
+        }
+
+        h1 {
+            font-family: var(--font-head);
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            line-height: 1.15;
+            margin-bottom: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 span.highlight {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        /* Selector Mode Cards */
+        .relationship-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 24px 0 32px;
+        }
+
+        .relation-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 18px 14px;
+            color: var(--text-muted);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-accent);
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .relation-btn svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--text-muted);
+            transition: stroke 0.3s ease, transform 0.3s ease;
+        }
+
+        .relation-btn:hover {
+            border-color: rgba(255, 51, 102, 0.4);
+            color: #fff;
+            transform: translateY(-3px);
+            background: rgba(255, 51, 102, 0.05);
+        }
+
+        .relation-btn.selected {
+            border-color: var(--accent-pink);
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.15), rgba(157, 78, 221, 0.15));
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
+        }
+
+        .relation-btn.selected svg {
+            stroke: var(--accent-pink);
+            transform: scale(1.15);
+        }
+
+        /* Action Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            color: #fff;
+            border: none;
+            padding: 16px 36px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 51, 102, 0.35);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-accent);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(255, 51, 102, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 14px 28px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-accent);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 32px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Step 2: Memory Grid */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin: 24px 0;
+        }
+
+        .memory-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 51, 102, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        .memory-card .card-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .memory-card h3 {
+            font-family: var(--font-head);
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .memory-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .memory-card .reveal-tag {
+            font-size: 0.75rem;
+            color: var(--accent-pink);
+            font-family: var(--font-accent);
+            font-weight: 600;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Step 3: Interactive Birthday Cake */
+        .cake-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 0;
+            position: relative;
+        }
+
+        .cake {
+            width: 220px;
+            height: 180px;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .plate {
+            width: 260px;
+            height: 16px;
+            background: linear-gradient(90deg, #334155, #64748b, #334155);
+            border-radius: 10px;
+            position: absolute;
+            bottom: -10px;
+            left: -20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .layer {
+            position: absolute;
+            width: 100%;
+            border-radius: 14px;
+        }
+
+        .layer-bottom {
+            bottom: 0;
+            height: 70px;
+            background: linear-gradient(135deg, #4a154b, #2b0938);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .layer-middle {
+            bottom: 60px;
+            height: 60px;
+            width: 85%;
+            left: 7.5%;
+            background: linear-gradient(135deg, #ff3366, #b5179e);
+            border-radius: 12px;
+        }
+
+        .layer-top {
+            bottom: 110px;
+            height: 50px;
+            width: 70%;
+            left: 15%;
+            background: linear-gradient(135deg, #ffd166, #f72585);
+            border-radius: 10px;
+        }
+
+        .icing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #ffffff;
+            border-radius: 10px 10px 8px 8px;
+            opacity: 0.9;
+        }
+
+        .candle {
+            position: absolute;
+            bottom: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 45px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 6px, var(--accent-pink) 6px, var(--accent-pink) 12px);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .flame {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 24px;
+            background: linear-gradient(to top, #ff4500, #ffae00, #ffffff);
+            border-radius: 50% 50% 35% 35%;
+            box-shadow: 0 0 20px #ffae00, 0 0 40px #ff4500;
+            animation: flicker 0.6s infinite alternate ease-in-out;
+            cursor: pointer;
+        }
+
+        .flame.out {
+            display: none;
+        }
+
+        .smoke {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .smoke.active {
+            animation: smokeRise 2s forwards;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.15) rotate(2deg); opacity: 0.9; }
+        }
+
+        @keyframes smokeRise {
+            0% { opacity: 0.8; transform: translateX(-50%) translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-50px) scale(4); }
+        }
+
+        .blow-instruction {
+            margin-top: 36px;
+            text-align: center;
+            font-family: var(--font-accent);
+            color: var(--accent-gold);
+            font-size: 1rem;
+            font-weight: 600;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* Step 4: Heartfelt Letter */
+        .letter-container {
+            background: rgba(13, 14, 21, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+            max-height: 380px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-pink) transparent;
+        }
+
+        .letter-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .letter-container::-webkit-scrollbar-thumb {
+            background: var(--accent-pink);
+            border-radius: 10px;
+        }
+
+        .letter-text {
+            font-family: var(--font-head);
+            font-size: 1.15rem;
+            line-height: 1.85;
+            color: #e2e8f0;
+            white-space: pre-line;
+        }
+
+        /* Step 5: Wish Generator / Finale */
+        .wish-box {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .star-button {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            border: none;
+            color: #000;
+            font-size: 2.2rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(255, 209, 102, 0.4);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .star-button:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 50px rgba(255, 209, 102, 0.7);
+        }
+
+        .wish-display {
+            min-height: 80px;
+            margin-top: 20px;
+            font-family: var(--font-head);
+            font-size: 1.35rem;
+            color: var(--accent-gold);
+            font-style: italic;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Interactive Audio Ambient Toggle */
+        .audio-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(13, 14, 21, 0.8);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .audio-toggle:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        /* Responsive Utilities */
+        @media (max-width: 600px) {
+            .glass-card {
+                padding: 28px 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .button-group {
+                flex-direction: column-reverse;
+                width: 100%;
+            }
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Particle Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <!-- Navigation Progress Indicator -->
+    <div class="progress-nav" id="progressNav">
+        <div class="step-dot active" data-step="0" onclick="goToStep(0)"></div>
+        <div class="step-dot" data-step="1" onclick="goToStep(1)"></div>
+        <div class="step-dot" data-step="2" onclick="goToStep(2)"></div>
+        <div class="step-dot" data-step="3" onclick="goToStep(3)"></div>
+        <div class="step-dot" data-step="4" onclick="goToStep(4)"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+
+        <!-- STEP 0: Welcome Landing -->
+        <section class="step-section active" id="step-0">
+            <div class="glass-card">
+                <span class="tagline">An Exclusive Experience</span>
+                <h1>Happy Birthday, <br><span class="highlight" id="recipientNameDisplay">Someone Special</span> ✨</h1>
+                <p class="subtitle">I created this dynamic visual journey to celebrate you today. Choose how we share this moment together:</p>
+
+                <div class="relationship-selector">
+                    <div class="relation-btn selected" data-type="crush" onclick="selectRelation('crush')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        Special Someone
+                    </div>
+                    <div class="relation-btn" data-type="bestie" onclick="selectRelation('bestie')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Best Friend
+                    </div>
+                    <div class="relation-btn" data-type="friend" onclick="selectRelation('friend')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                        Great Friend
+                    </div>
+                </div>
+
+                <div class="button-group" style="justify-content: flex-end;">
+                    <button class="btn-primary" onclick="nextStep()">
+                        Begin Experience 
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 1: Interactive Memory Gallery -->
+        <section class="step-section" id="step-1">
+            <div class="glass-card">
+                <span class="tagline">Chapter I • Reflection</span>
+                <h1>Moments That <span class="highlight">Shine</span></h1>
+                <p class="subtitle">Click on each memory capsule to unlock a special reason why you mean so much.</p>
+
+                <div class="memory-grid" id="memoryGrid">
+                    <!-- Dynamic memory cards populated by JS -->
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn-primary" onclick="nextStep()">
+                        Continue
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: Interactive Cake & Candle Blowing -->
+        <section class="step-section" id="step-2">
+            <div class="glass-card">
+                <span class="tagline">Chapter II • Make a Wish</span>
+                <h1>Blow Out The <span class="highlight">Candle</span></h1>
+                <p class="subtitle" style="text-align: center;">Make a silent wish in your heart, then tap the glowing flame to blow it out!</p>
+
+                <div class="cake-container">
+                    <div class="cake">
+                        <div class="plate"></div>
+                        <div class="layer layer-bottom"></div>
+                        <div class="layer layer-middle"></div>
+                        <div class="layer layer-top">
+                            <div class="icing"></div>
+                        </div>
+                        <div class="candle">
+                            <div class="flame" id="candleFlame" onclick="blowCandle()"></div>
+                            <div class="smoke" id="candleSmoke"></div>
+                        </div>
+                    </div>
+                    <div class="blow-instruction" id="blowText">✨ Click the flame to blow out the candle! ✨</div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn-primary" id="cakeNextBtn" onclick="nextStep()" style="opacity: 0.5; pointer-events: none;">
+                        Unfold Letter
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: Heartfelt Letter -->
+        <section class="step-section" id="step-3">
+            <div class="glass-card">
+                <span class="tagline">Chapter III • From The Heart</span>
+                <h1>A Note For <span class="highlight">You</span></h1>
+
+                <div class="letter-container">
+                    <div class="letter-text" id="typewriterText"></div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn-primary" onclick="nextStep()">
+                        Final Surprise
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 4: Wishing Well Finale -->
+        <section class="step-section" id="step-4">
+            <div class="glass-card" style="text-align: center;">
+                <span class="tagline">Finale • Infinite Wishes</span>
+                <h1>May Your Year Be <span class="highlight">Magical</span></h1>
+                <p class="subtitle">Tap the star below to generate a unique birthday blessing for your year ahead!</p>
+
+                <div class="wish-box">
+                    <button class="star-button" onclick="generateWish()">⭐</button>
+                    <div class="wish-display" id="wishDisplay">"Click the glowing star to reveal your wish..."</div>
+                </div>
+
+                <div class="button-group" style="justify-content: center; margin-top: 40px;">
+                    <button class="btn-primary" onclick="restartJourney()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                        Replay Experience
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Ambient Chime Audio Toggle -->
+    <div class="audio-toggle" title="Toggle Music" onclick="toggleAudio()">
+        <svg id="audioIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           1. Dynamic Canvas Particle & Sparkle System
+        ---------------------------------------------------- */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let confetti = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.6 + 0.2;
+                this.color = Math.random() > 0.5 ? '#ff3366' : '#9d4edd';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Confetti {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4;
+                this.speedX = (Math.random() - 0.5) * 12;
+                this.speedY = (Math.random() - 0.8) * 12;
+                this.gravity = 0.25;
+                this.color = ['#ff3366', '#9d4edd', '#00f2fe', '#ffd166', '#ffffff'][Math.floor(Math.random() * 5)];
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 10;
+                this.opacity = 1;
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                this.opacity -= 0.012;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.opacity);
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < 70; i++) {
+            particles.push(new Particle());
+        }
+
+        function triggerConfettiBurst() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            for (let i = 0; i < 120; i++) {
+                confetti.push(new Confetti(centerX, centerY));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            confetti.forEach((c, index) => {
+                c.update();
+                c.draw();
+                if (c.opacity <= 0) {
+                    confetti.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        /* ----------------------------------------------------
+           2. State Management & Relationship Personalization
+        ---------------------------------------------------- */
+        let currentStep = 0;
+        let selectedRelation = 'crush'; // Options: 'crush', 'bestie', 'friend'
+
+        const memoryData = {
+            crush: [
+                { icon: '✨', title: 'Your Presence', text: 'How every room lights up instantly whenever you walk in.' },
+                { icon: '🌺', title: 'Your Smile', text: 'A genuine, radiant smile that effortlessly brightens my day.' },
+                { icon: '🎵', title: 'Shared Vibe', text: 'The effortless flow of our conversations that feel so comforting.' },
+                { icon: '💫', title: 'Your Kindness', text: 'The warm, thoughtful way you care about people around you.' }
+            ],
+            bestie: [
+                { icon: '🚀', title: 'Partner in Crime', text: 'All the spontaneous adventures and endless inside jokes.' },
+                { icon: '🛡️', title: 'Unshakable Support', text: 'Always having each other\'s back no matter what comes our way.' },
+                { icon: '☕', title: 'Late Night Chats', text: 'Hours spent talking about everything and nothing at all.' },
+                { icon: '⭐', title: 'Pure Loyalty', text: 'A genuine friendship that feels like family.' }
+            ],
+            friend: [
+                { icon: '🌟', title: 'Positive Energy', text: 'Your infectious enthusiasm and bright outlook on life.' },
+                { icon: '🤝', title: 'Great Memories', text: 'Every fun conversation and great moment shared together.' },
+                { icon: '💡', title: 'Inspiring Mind', text: 'Your unique perspective and creative way of seeing the world.' },
+                { icon: '🎁', title: 'Kind Heart', text: 'The warmth and sincerity you share with everyone.' }
+            ]
+        };
+
+        const letterData = {
+            crush: "Happy Birthday!\n\nI wanted to take a moment today to craft something unique for you. Having you in my life adds a very special kind of magic. You carry yourself with such grace, intelligence, and a rare warmth that never fails to leave an impression.\n\nI hope this birthday brings you as much happiness, peace, and pure joy as you effortlessly bring to everyone around you. May all your grandest dreams begin to unfold this year.\n\nHappy Birthday once again! ✨",
+            bestie: "Happy Birthday Bestie!\n\nAnother year wiser, cooler, and even more amazing! Thank you for being such an irreplaceable part of my life. From all our crazy laughs to quiet moments of real talk, I'm so grateful for our friendship.\n\nMay this year be packed with incredible wins, unforgettable adventures, and everything you’ve been wishing for. You deserve nothing but the absolute best!\n\nLet’s make this birthday epic! 🥂🎉",
+            friend: "Happy Birthday!\n\nWishing you an exceptionally wonderful birthday! It’s always a pleasure sharing laughs and good times with you. Your warmth, energy, and positivity are truly appreciated.\n\nMay the coming year bring you incredible success, endless joy, and great opportunities. Have an unforgettable day celebrating with those you love!\n\nCheers to a great year ahead! 🥳✨"
+        };
+
+        const wishes = [
+            "May your year be filled with unexpected joy, unconditional love, and magnificent breakthroughs!",
+            "May every goal you set this year transform into an incredible achievement!",
+            "Wishing you 365 days of good health, laughter, and endless creative inspiration!",
+            "May your path ahead be illuminated by happiness and surrounded by genuine warmth!",
+            "Here’s to a year of bold adventures, quiet peace, and pure magic!"
+        ];
+
+        function selectRelation(type) {
+            selectedRelation = type;
+            document.querySelectorAll('.relation-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.getAttribute('data-type') === type);
+            });
+            updateMemories();
+        }
+
+        function updateMemories() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            memoryData[selectedRelation].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="card-icon">${item.icon}</div>
+                        <h3>${item.title}</h3>
+                        <p>${item.text}</p>
+                    </div>
+                    <div class="reveal-tag">✦ Highlight</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        updateMemories();
+
+        /* ----------------------------------------------------
+           3. Navigation & Journey Step Controls
+        ---------------------------------------------------- */
+        function goToStep(stepIndex) {
+            if (stepIndex < 0 || stepIndex > 4) return;
+            
+            document.querySelectorAll('.step-section').forEach((sec, idx) => {
+                sec.classList.toggle('active', idx === stepIndex);
+            });
+
+            document.querySelectorAll('.step-dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === stepIndex);
+            });
+
+            currentStep = stepIndex;
+
+            if (stepIndex === 3) {
+                startTypewriter();
+            }
+        }
+
+        function nextStep() {
+            goToStep(currentStep + 1);
+        }
+
+        function prevStep() {
+            goToStep(currentStep - 1);
+        }
+
+        function restartJourney() {
+            // Reset Candle
+            const flame = document.getElementById('candleFlame');
+            flame.classList.remove('out');
+            document.getElementById('blowText').innerText = "✨ Click the flame to blow out the candle! ✨";
+            document.getElementById('cakeNextBtn').style.opacity = '0.5';
+            document.getElementById('cakeNextBtn').style.pointerEvents = 'none';
+
+            goToStep(0);
+        }
+
+        /* ----------------------------------------------------
+           4. Interactive Candle Blowing Feature
+        ---------------------------------------------------- */
+        function blowCandle() {
+            const flame = document.getElementById('candleFlame');
+            const smoke = document.getElementById('candleSmoke');
+            const blowText = document.getElementById('blowText');
+            const cakeNextBtn = document.getElementById('cakeNextBtn');
+
+            if (!flame.classList.contains('out')) {
+                flame.classList.add('out');
+                smoke.classList.add('active');
+                blowText.innerText = "🎉 Wish Granted! Happy Birthday! 🎉";
+                cakeNextBtn.style.opacity = '1';
+                cakeNextBtn.style.pointerEvents = 'auto';
+
+                triggerConfettiBurst();
+                playChimeSound();
+            }
+        }
+
+        /* ----------------------------------------------------
+           5. Typewriter Letter Animation
+        ---------------------------------------------------- */
+        let typewriterTimer = null;
+        function startTypewriter() {
+            const textElement = document.getElementById('typewriterText');
+            textElement.innerHTML = '';
+            const fullText = letterData[selectedRelation];
+            let i = 0;
+
+            if (typewriterTimer) clearInterval(typewriterTimer);
+
+            typewriterTimer = setInterval(() => {
+                if (i < fullText.length) {
+                    textElement.innerHTML += fullText.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typewriterTimer);
+                }
+            }, 30);
+        }
+
+        /* ----------------------------------------------------
+           6. Wish Generator Finale
+        ---------------------------------------------------- */
+        function generateWish() {
+            const wishDisplay = document.getElementById('wishDisplay');
+            const randomIndex = Math.floor(Math.random() * wishes.length);
+            
+            wishDisplay.style.opacity = 0;
+            setTimeout(() => {
+                wishDisplay.innerText = `"${wishes[randomIndex]}"`;
+                wishDisplay.style.opacity = 1;
+                triggerConfettiBurst();
+            }, 300);
+        }
+
+        /* ----------------------------------------------------
+           7. Ambient Sound Synthesis (Web Audio API)
+        ---------------------------------------------------- */
+        let audioCtx = null;
+        let isPlayingAudio = false;
+
+        function playChimeSound() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + index * 0.12);
+                    
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + index * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.12 + 1.2);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start(audioCtx.currentTime + index * 0.12);
+                    osc.stop(audioCtx.currentTime + index * 0.12 + 1.2);
+                });
+            } catch (e) {
+                console.log('Audio playback prevented or unsupported');
+            }
+        }
+
+        function toggleAudio() {
+            isPlayingAudio = !isPlayingAudio;
+            const icon = document.getElementById('audioIcon');
+            if (isPlayingAudio) {
+                playChimeSound();
+                icon.style.stroke = 'var(--accent-pink)';
+            } else {
+                icon.style.stroke = 'currentColor';
+            }
+        }
+    </script>
+</body>
+</html>
+```
